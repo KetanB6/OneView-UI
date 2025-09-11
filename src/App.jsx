@@ -7,23 +7,34 @@ const App = () => {
   const [mode, setMode] = useState("retrieve");
   const [keyInput, setKeyInput] = useState("");
   const [retrievedMessage, setRetrievedMessage] = useState("");
+  const [loading, setLoading] = useState(false); // NEW
 
   const saveMessage = async () => {
     try {
-      const resp = await axios.post(`https://oneview-g8eh.onrender.com/message`, message);
+      setLoading(true);
+      const resp = await axios.post(
+        `https://oneview-g8eh.onrender.com/message`,
+        message
+      );
       setGeneratedKey(resp.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const getMessage = async () => {
     try {
-      const resp = await axios.get(`https://oneview-g8eh.onrender.com/message/${keyInput}`);
-      console.log(resp.status)
+      setLoading(true);
+      const resp = await axios.get(
+        `https://oneview-g8eh.onrender.com/message/${keyInput}`
+      );
       setRetrievedMessage(resp.data);
     } catch (error) {
-      setRetrievedMessage("Message not found or alredy viewed!")
+      setRetrievedMessage("Message not found or already viewed!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,7 +46,7 @@ const App = () => {
           style={mode === "save" ? { ...styles.topButton, ...styles.active } : styles.topButton}
           onClick={() => {
             setMode("save");
-            setGeneratedKey(""); 
+            setGeneratedKey("");
             setRetrievedMessage("");
           }}
         >
@@ -71,7 +82,8 @@ const App = () => {
               </button>
             </div>
 
-            {generatedKey && (
+            {loading && <p style={{ color: "gray", marginTop: 12 }}>💾 Saving message...</p>}
+            {generatedKey && !loading && (
               <div style={styles.resultBox}>
                 ✅ Your message has been saved! <br />
                 <strong>Key:</strong> {generatedKey}
@@ -94,8 +106,15 @@ const App = () => {
               </button>
             </div>
             <div className="message">
-              {retrievedMessage && <p style={styles.result}><br/>📩Message for you:<br/><br/>
-                 {retrievedMessage}</p>}
+              {loading && <p style={{ color: "gray" }}>⏳ Fetching message...</p>}
+              {retrievedMessage && !loading && (
+                <p style={styles.result}>
+                  <br /> 📩 Message for you:
+                  <br />
+                  <br />
+                  {retrievedMessage}
+                </p>
+              )}
             </div>
           </>
         )}
@@ -108,12 +127,12 @@ const App = () => {
 const styles = {
   container: {
     boxSizing: "border-box",
-    width: "100%",               
+    width: "100%",
     minHeight: "100vh",
     padding: "40px 16px",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",        
+    alignItems: "center",
     background: "linear-gradient(135deg, #74ebd5 0%, #9face6 100%)",
     fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
   },
@@ -139,7 +158,7 @@ const styles = {
   },
   card: {
     width: "100%",
-    maxWidth: "480px",        
+    maxWidth: "480px",
     background: "#fff",
     borderRadius: 12,
     padding: "22px",
@@ -161,7 +180,7 @@ const styles = {
   },
   inputSmall: {
     padding: "10px",
-    width: "180px",            
+    width: "180px",
     borderRadius: 8,
     border: "1px solid #ddd",
     fontSize: 15,
