@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Nav from "./components/Navbar"
 
 const App = () => {
   const [message, setMessage] = useState({ message: "", keys: "" });
@@ -7,7 +8,7 @@ const App = () => {
   const [mode, setMode] = useState("retrieve");
   const [keyInput, setKeyInput] = useState("");
   const [retrievedMessage, setRetrievedMessage] = useState("");
-  const [loading, setLoading] = useState(false); // NEW
+  const [loading, setLoading] = useState(false); 
 
   const saveMessage = async () => {
     try {
@@ -39,7 +40,10 @@ const App = () => {
   };
 
   return (
+    <>
+    <Nav/>
     <div style={styles.container}>
+      
       {/* Toggle */}
       <div style={styles.topBar}>
         <button
@@ -120,6 +124,7 @@ const App = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

@@ -3,3 +3,34 @@ html, body, #root {
   margin: 0;
   height: 100%;
 }
+
+.navbar{
+  width: 97vw;
+  height: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgb(17, 253, 174);
+  padding: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.head{
+  color: rgb(240, 241, 240);
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.status_btn{
+  background-color: rgb(8, 244, 71);
+  font-weight: 700;
+  border-radius: 8px;
+  width: auto;
+  min-width: 200px;
+  height: auto;
+  padding: 10px;
+  border: 2px solid #ccc;
+  font-size: 22px;
+  color: aliceblue;
+}
+ 
