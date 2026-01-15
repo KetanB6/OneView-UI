@@ -45,7 +45,7 @@ const App = () => {
   return (
     <div className="app-container">
       <Navbar />
-      
+
       <div className="main-content">
         {/* Toggle Bar */}
         <div className="toggle-bar">
@@ -105,13 +105,13 @@ const App = () => {
                   onChange={(e) => setKeyInput(e.target.value)}
                   className="input-field input-small"
                 />
-                <button className="action-btn" style={{width: 'auto'}} onClick={getMessage} disabled={loading}>
+                <button className="action-btn" style={{ width: 'auto' }} onClick={getMessage} disabled={loading}>
                   Decrypt
                 </button>
               </div>
 
               {loading && <p className="loading-text">⏳ Fetching secure data...</p>}
-              
+
               {retrievedMessage && !loading && (
                 <div className="message-display">
                   <strong>📩 Decrypted Message:</strong>
@@ -122,6 +122,10 @@ const App = () => {
             </>
           )}
         </div>
+      </div>
+      <div className="footer-note">
+        ⚠️ <strong>Note:</strong> Backend is hosted on Render Free Tier. <br />
+        Please allow <strong>2-3 minutes</strong> for the server to wake up.
       </div>
     </div>
   );
