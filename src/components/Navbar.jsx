@@ -1,32 +1,34 @@
 import { useEffect, useState } from 'react';
-import axios from "axios"
-
+import axios from "axios";
 
 export const Navbar = () => {
     const [loading, setLoading] = useState(true);
- 
 
     const healthCheck = async () => {
-      try {
-        const resp = await axios.get("https://oneview-g8eh.onrender.com/health");
-        console.log("Health response:", resp.data); 
-
-        if (resp.data === "active") {
-          setLoading(false);
+        try {
+            const resp = await axios.get("https://oneview-g8eh.onrender.com/health");
+            if (resp.data === "active") {
+                setLoading(false);
+            }
+        } catch (err) {
+            console.error("Health check failed:", err);
+            // Optional: keep loading true or set an error state here
         }
-      } catch (err) {
-        console.error("Health check failed:", err);
-      }
     };
 
-    healthCheck();
+    // Use useEffect to run this once on mount, rather than calling it in the body
+    useEffect(() => {
+        healthCheck();
+    }, []);
 
     return (
         <div className='navbar'>
             <div className='head'>OneView</div>
-            <button style={loading ? { backgroundColor: "orange" } : { backgroundColor: "green" }} className='status_btn'>{loading ? "Server Loading..." : "Server Loaded"}</button>
+            <div className={`status_badge ${loading ? 'loading' : 'active'}`}>
+                {loading ? "Server Connecting..." : "Server Active"}
+            </div>
         </div>
     )
 }
 
-export default Navbar
+export default Navbar;

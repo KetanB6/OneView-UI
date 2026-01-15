@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Nav from "./components/Navbar"
+import Navbar from "./components/Navbar"; // Check your import path
+import "./App.css";
 
 const App = () => {
   const [message, setMessage] = useState({ message: "", keys: "" });
@@ -8,9 +9,10 @@ const App = () => {
   const [mode, setMode] = useState("retrieve");
   const [keyInput, setKeyInput] = useState("");
   const [retrievedMessage, setRetrievedMessage] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const saveMessage = async () => {
+    if (!message.message.trim()) return; // Prevent empty sends
     try {
       setLoading(true);
       const resp = await axios.post(
@@ -26,6 +28,7 @@ const App = () => {
   };
 
   const getMessage = async () => {
+    if (!keyInput.trim()) return;
     try {
       setLoading(true);
       const resp = await axios.get(
@@ -40,187 +43,88 @@ const App = () => {
   };
 
   return (
-    <>
-    <Nav/>
-    <div style={styles.container}>
+    <div className="app-container">
+      <Navbar />
       
-      {/* Toggle */}
-      <div style={styles.topBar}>
-        <button
-          style={mode === "save" ? { ...styles.topButton, ...styles.active } : styles.topButton}
-          onClick={() => {
-            setMode("save");
-            setGeneratedKey("");
-            setRetrievedMessage("");
-          }}
-        >
-          💬 Save Message
-        </button>
-        <button
-          style={mode === "retrieve" ? { ...styles.topButton, ...styles.active } : styles.topButton}
-          onClick={() => {
-            setMode("retrieve");
-            setGeneratedKey("");
-            setRetrievedMessage("");
-          }}
-        >
-          🔑 Retrieve Message
-        </button>
-      </div>
+      <div className="main-content">
+        {/* Toggle Bar */}
+        <div className="toggle-bar">
+          <button
+            className={`toggle-btn ${mode === "save" ? "active" : ""}`}
+            onClick={() => {
+              setMode("save");
+              setGeneratedKey("");
+              setRetrievedMessage("");
+            }}
+          >
+            💬 Save Message
+          </button>
+          <button
+            className={`toggle-btn ${mode === "retrieve" ? "active" : ""}`}
+            onClick={() => {
+              setMode("retrieve");
+              setGeneratedKey("");
+              setRetrievedMessage("");
+            }}
+          >
+            🔑 Retrieve Message
+          </button>
+        </div>
 
-      {/* Card */}
-      <div style={styles.card}>
-        {mode === "save" ? (
-          <>
-            <h2 style={styles.heading}>💬 Save a New Message</h2>
-            <input
-              type="text"
-              placeholder="Type your message..."
-              value={message.message}
-              onChange={(e) => setMessage({ message: e.target.value, keys: "" })}
-              style={styles.inputFull}
-            />
-            <div style={{ display: "flex", justifyContent: "center", gap: 10 }}>
-              <button style={styles.button} onClick={saveMessage}>
-                Generate Key
-              </button>
-            </div>
-
-            {loading && <p style={{ color: "gray", marginTop: 12 }}>💾 Saving message...</p>}
-            {generatedKey && !loading && (
-              <div style={styles.resultBox}>
-                ✅ Your message has been saved! <br />
-                <strong>Key:</strong> {generatedKey}
-              </div>
-            )}
-          </>
-        ) : (
-          <>
-            <h2 style={styles.heading}>🔑 Retrieve Message</h2>
-            <div style={styles.retrieveRow}>
+        {/* Main Card */}
+        <div className="card">
+          {mode === "save" ? (
+            <>
+              <h2 className="card-heading">Secure Your Message</h2>
               <input
                 type="text"
-                placeholder="Enter your key..."
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                style={styles.inputSmall}
+                placeholder="Type your secret message..."
+                value={message.message}
+                onChange={(e) => setMessage({ message: e.target.value, keys: "" })}
+                className="input-field"
               />
-              <button style={styles.button} onClick={getMessage}>
-                Get Message
+              <button className="action-btn" onClick={saveMessage} disabled={loading}>
+                {loading ? "Generating..." : "Generate Key"}
               </button>
-            </div>
-            <div className="message">
-              {loading && <p style={{ color: "gray" }}>⏳ Fetching message...</p>}
-              {retrievedMessage && !loading && (
-                <p style={styles.result}>
-                  <br /> 📩 Message for you:
-                  <br />
-                  <br />
-                  {retrievedMessage}
-                </p>
+
+              {generatedKey && !loading && (
+                <div className="result-box">
+                  <div>✅ Message Saved!</div>
+                  <span className="key-display">{generatedKey}</span>
+                </div>
               )}
-            </div>
-          </>
-        )}
+            </>
+          ) : (
+            <>
+              <h2 className="card-heading">Retrieve Message</h2>
+              <div className="retrieve-row">
+                <input
+                  type="text"
+                  placeholder="Enter access key..."
+                  value={keyInput}
+                  onChange={(e) => setKeyInput(e.target.value)}
+                  className="input-field input-small"
+                />
+                <button className="action-btn" style={{width: 'auto'}} onClick={getMessage} disabled={loading}>
+                  Decrypt
+                </button>
+              </div>
+
+              {loading && <p className="loading-text">⏳ Fetching secure data...</p>}
+              
+              {retrievedMessage && !loading && (
+                <div className="message-display">
+                  <strong>📩 Decrypted Message:</strong>
+                  <br /><br />
+                  {retrievedMessage}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
-    </>
   );
-};
-
-/* Styles */
-const styles = {
-  container: {
-    boxSizing: "border-box",
-    width: "100%",
-    minHeight: "100vh",
-    padding: "40px 16px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    background: "linear-gradient(135deg, #74ebd5 0%, #9face6 100%)",
-    fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
-  },
-  topBar: {
-    display: "flex",
-    gap: "12px",
-    marginBottom: "22px",
-  },
-  topButton: {
-    padding: "10px 16px",
-    borderRadius: 8,
-    border: "none",
-    cursor: "pointer",
-    background: "#ff6b6b",
-    color: "#fff",
-    fontWeight: 700,
-    boxShadow: "0 4px 10px rgba(0,0,0,0.12)",
-    transition: "transform 0.15s ease, background 0.15s ease",
-  },
-  active: {
-    background: "#4cafef",
-    transform: "translateY(-2px)",
-  },
-  card: {
-    width: "100%",
-    maxWidth: "480px",
-    background: "#fff",
-    borderRadius: 12,
-    padding: "22px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-  },
-  heading: {
-    margin: "0 0 14px 0",
-    fontSize: "20px",
-    color: "#222",
-  },
-  inputFull: {
-    width: "100%",
-    padding: "12px",
-    marginBottom: "12px",
-    borderRadius: 8,
-    border: "1px solid #ddd",
-    fontSize: 15,
-    boxSizing: "border-box",
-  },
-  inputSmall: {
-    padding: "10px",
-    width: "180px",
-    borderRadius: 8,
-    border: "1px solid #ddd",
-    fontSize: 15,
-    boxSizing: "border-box",
-  },
-  retrieveRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    marginBottom: 12,
-  },
-  button: {
-    padding: "10px 16px",
-    borderRadius: 8,
-    border: "none",
-    cursor: "pointer",
-    background: "#4cafef",
-    color: "#fff",
-    fontWeight: 700,
-    boxShadow: "0 6px 14px rgba(0,0,0,0.12)",
-  },
-  result: {
-    marginTop: 12,
-    fontWeight: 600,
-    color: "#222",
-  },
-  resultBox: {
-    marginTop: 14,
-    background: "#ffffffef",
-    padding: "14px 16px",
-    borderRadius: 10,
-    fontSize: 15,
-    boxShadow: "0 6px 12px rgba(0,0,0,0.08)",
-  },
 };
 
 export default App;
